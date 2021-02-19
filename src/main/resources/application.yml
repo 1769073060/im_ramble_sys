@@ -1,0 +1,73 @@
+server:
+  port: 8080
+  #servlet ������·����Ĭ��/������ͨ���˷������������ķ���·��
+  servlet:
+    context-path: /im_ramble_sys
+
+spring:
+  datasource:
+    name: im_ramble_sys
+    #����druid������Դ
+    type: com.alibaba.druid.pool.DruidDataSource
+    #�������ݿ��url
+    url: jdbc:mysql://120.55.192.186:3310/im_ramble_sys?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: rzkruizhukai123.
+    driver-class-name: com.mysql.jdbc.Driver
+
+    #���ͳ��
+    filters: stat
+    initial-size: 2 #��ʼ������
+    max-idle: 10 #������������
+    min-idle: 1 #��С����������
+    max-active: 20 #�������
+    #��ȡ���ӳ�ʱ�ĵȴ�ʱ��
+    max-wait: 60000
+    # �����ý���һ�μ��,�����Ҫ�رյĿ�������
+    time-between-eviction-runs-millis: 60000
+    # һ�������ڳ�����С����Ŀռ�
+    min-evictable-time-millis: 30000
+    #��֤������Ч����sql,��ͬ���������ò�ͬ
+    validation-query: SELECT 'x'
+    #ָ�������Ƿ񱻿������ӻ����� (�����) ���м���,������ʧ��,�����ӽ��ӳ���ȥ��
+    test-while-idle: true
+    #��������ǲ�Ҫ����,����Ӱ������
+    test-on-borrow: false
+  mvc:
+    view:
+      suffix: .jsp
+      prefix: /WEB-INF/pages/
+#springmvc ��ͼ������ɨ��ǰ׺���׺ָ�����Ƶ�·��
+
+mybatis-plus:
+  global-config:
+    banner: false
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# swagger2
+swagger:
+  enable: true
+
+# ===================================================================
+#
+# ===================================================================
+fdfs:
+  so-timeout: 1501
+  connect-timeout: 601
+  thumb-image:
+    width: 150
+    height: 150
+  tracker-list:
+    - 120.55.192.186:22122
+    - 120.55.192.186:22122
+
+
+
+
+
+
+
+
+
+
