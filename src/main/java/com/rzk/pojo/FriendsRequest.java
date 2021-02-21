@@ -34,7 +34,7 @@ public class FriendsRequest implements Serializable {
     private String acceptUserId;
 
     @ApiModelProperty(value = "发送请求的时间")
-    private Date requestDateTime;
+    private Long requestDateTime;
 
 
 }

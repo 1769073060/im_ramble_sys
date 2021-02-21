@@ -1,5 +1,6 @@
 package com.rzk.service;
 
+import com.rzk.enums.SearchFriendsStatusEnum;
 import com.rzk.pojo.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -36,7 +37,24 @@ public interface IUserService extends IService<User> {
     public User setPersonalizedSignature(User user);
 
     /**
-     *
+     * 修改用户
+     * @param user
+     * @return
      */
     public User updateUserInfo(User user);
+
+    /**
+     * 搜索好友的前置条件接口
+     * @param myUserId
+     * @param friendUserName
+     * @return
+     */
+    Integer preconditionSearchFriends(String myUserId, String friendUserName);
+
+    /**
+     * 发送好友请求
+     * @param myUserId
+     * @param friendUserName
+     */
+    void sendFriendRequest(String myUserId, String friendUserName);
 }

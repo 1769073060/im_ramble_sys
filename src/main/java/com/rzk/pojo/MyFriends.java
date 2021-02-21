@@ -32,5 +32,5 @@ public class MyFriends implements Serializable {
     @ApiModelProperty(value = "用户的好友id")
     private String myFriendUserId;
 
-
+    private Long createTime;
 }

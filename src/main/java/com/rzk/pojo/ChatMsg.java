@@ -40,7 +40,7 @@ public class ChatMsg implements Serializable {
     private Integer signFlag;
 
     @ApiModelProperty(value = "发送请求的时间")
-    private Date createTime;
+    private Long createTime;
 
 
 }

@@ -4,6 +4,7 @@ package com.rzk.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.rzk.bo.UserBo;
 import com.rzk.consts.MsgConsts;
+import com.rzk.enums.SearchFriendsStatusEnum;
 import com.rzk.pojo.User;
 import com.rzk.service.IUserService;
 import com.rzk.utils.FastDFSClient;
@@ -148,8 +149,64 @@ public class UserController {
         return new Result(MsgConsts.SUCCESS_CODE, MsgConsts.SUCCESS_MSG, selectUser);
     }
 
+
     /**
+     * 搜索好友
      *
+     * 前置条件
+     * 1.搜索的用户如果不存在,则返回[无此用户]
+     * 2.搜索的账号如果是你自己,则返回[不能添加自己]
+     * 3.搜索的朋友已经是你的好友,返回[该用户已经是你的好友]
+     * @param id
+     * @param userName
+     * @return
+     */
+    @ApiOperation(httpMethod = "POST", value = "搜索好友方法")
+    @PostMapping("/searchFriend")
+    public Result searchFriend(@RequestParam("myUserId") String id,@RequestParam("friendUserName")String userName){
+        System.out.println("id:"+id);
+        System.out.println("userName:"+userName);
+        Result result = null;
+        if (isEmpty(id,userName)){
+            result = new Result(MsgConsts.FAIL_CODE, MsgConsts.FAIL_MSG, MsgConsts.Enter_User_Name);
+            return result;
+        }
+        Integer status = iUserService.preconditionSearchFriends(id,userName);
+        //如果状态等于0就可以添加好友
+        if (status == SearchFriendsStatusEnum.SUCCESS.status){
+            User user = queryUserNameIsExit(userName);
+            UserVo userVo = new UserVo();
+            BeanUtils.copyProperties(user,userVo);
+            return new Result(MsgConsts.SUCCESS_CODE, MsgConsts.SUCCESS_MSG, userVo);
+        }else {
+            String msg = SearchFriendsStatusEnum.getMsgByKey(status);
+            return new Result(MsgConsts.FAIL_CODE, MsgConsts.FAIL_MSG, msg);
+        }
+    }
+
+    @ApiOperation(httpMethod = "POST", value = "发送添加好友请求")
+    @PostMapping("/addFriendRequest")
+    public Result addFriendRequest(@RequestParam("myUserId") String id,@RequestParam("friendUserName")String userName){
+        System.out.println(userName);
+        Result result = null;
+        if (isEmpty(id,userName)){
+            result = new Result(MsgConsts.FAIL_CODE, MsgConsts.FAIL_MSG, MsgConsts.Enter_User_Name);
+            return result;
+        }
+        Integer status = iUserService.preconditionSearchFriends(id,userName);
+        //如果状态等于0就可以添加好友
+        if (status == SearchFriendsStatusEnum.SUCCESS.status){
+            iUserService.sendFriendRequest(id, userName);
+        }else {
+            String msg = SearchFriendsStatusEnum.getMsgByKey(status);
+            return new Result(MsgConsts.FAIL_CODE, MsgConsts.FAIL_MSG, msg);
+        }
+        return new Result(MsgConsts.SUCCESS_CODE, MsgConsts.SUCCESS_MSG, MsgConsts.SEND_SUCCESS);
+
+    }
+
+    /**
+     * 修改个性签名方法
      * @param user
      * @return
      */

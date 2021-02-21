@@ -49,6 +49,7 @@ public class User implements Serializable {
 
     @ApiModelProperty(value = "每个手机的id")
     private String cid;
-
+    private Long createTime;
+    private Long updateTime;
 
 }

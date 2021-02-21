@@ -76,6 +76,7 @@ public class MsgConsts {
     public static final String USER_IS_NOT_EXIST = "用户不存在";
     public static final String ACCOUNT_OR_PASSWORD_ERROR = "账号或密码错误";
     public static final String PASSWORD_ERROR = "密码错误";
-
+    public static final String Enter_User_Name = "请输入用户名";
+    public static final String SEND_SUCCESS = "发送成功";
 
 }

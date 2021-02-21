@@ -1,5 +1,11 @@
 package com.rzk.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.rzk.enums.SearchFriendsStatusEnum;
+import com.rzk.mapper.FriendsRequestMapper;
+import com.rzk.mapper.MyFriendsMapper;
+import com.rzk.pojo.FriendsRequest;
+import com.rzk.pojo.MyFriends;
 import com.rzk.pojo.User;
 import com.rzk.idworker.Sid;
 import com.rzk.mapper.UserMapper;
@@ -30,6 +36,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private MyFriendsMapper myFriendsMapper;
+    @Resource
+    private FriendsRequestMapper friendsRequestMapper;
     @Resource
     private Sid sid;
     @Resource
@@ -65,6 +75,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         user.setFaceImageBig("");
         user.setNickName("");
         user.setPersonalizedSignature("");
+        user.setCreateTime(System.currentTimeMillis());
+        user.setUpdateTime(System.currentTimeMillis());
         user.setPassWord(MD5Utils.getPwd(user.getPassWord()));
         userMapper.insert(user);
         return user;
@@ -89,6 +101,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      */
     @Override
     public User setPersonalizedSignature(User user) {
+        user.setUpdateTime(System.currentTimeMillis());
         userMapper.updateById(user);
         User selectById = userMapper.selectById(user.getId());
         return selectById;
@@ -101,9 +114,65 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      */
     @Override
     public User updateUserInfo(User user) {
+        user.setUpdateTime(System.currentTimeMillis());
         userMapper.updateById(user);
         User selectById = userMapper.selectById(user.getId());
         return selectById;
+    }
+
+    /**
+     * 搜索好友的前置条件
+     * @param myUserId
+     * @param friendUserName
+     * @return
+     */
+    @Override
+    public Integer preconditionSearchFriends(String myUserId, String friendUserName) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("user_name",friendUserName);
+        User user = userMapper.selectOne(queryWrapper);
+        //搜索的用户如果不存在,则返回[无此用户]
+        if (user == null){
+            return SearchFriendsStatusEnum.USER_NOT_EXIST.status;
+        }
+        //搜索的账号如果是你自己,则返回[不能添加自己]
+        if (myUserId.equals(user.getId())){
+            return SearchFriendsStatusEnum.NOT_YOURSELF.status;
+        }
+        //搜索的朋友已经是你的好友,返回[该用户已经是你的好友]
+        QueryWrapper<MyFriends> friendsQueryWrapper = new QueryWrapper<>();
+        friendsQueryWrapper.eq("my_user_id",myUserId);
+        friendsQueryWrapper.eq("my_friend_user_id",user.getId());
+        MyFriends myFriends = myFriendsMapper.selectOne(friendsQueryWrapper);
+        //如果不等于空,就证明已经是你的好友了
+        if (myFriends!=null){
+            return SearchFriendsStatusEnum.ALREADY_FRIENDS.status;
+        }
+        return SearchFriendsStatusEnum.SUCCESS.status;
+    }
+
+    @Override
+    public void sendFriendRequest(String myUserId, String friendUserName) {
+        //查询好友信息
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("user_name",friendUserName);
+        User user = userMapper.selectOne(queryWrapper);
+
+
+        QueryWrapper<MyFriends> friendsQueryWrapper = new QueryWrapper<>();
+        friendsQueryWrapper.eq("my_user_id",myUserId);
+        friendsQueryWrapper.eq("my_friend_user_id",user.getId());
+        MyFriends myFriends = myFriendsMapper.selectOne(friendsQueryWrapper);
+        //如果等于空,就证明已经不是你的好友了
+        if (myFriends==null){
+            FriendsRequest friendsRequest = new FriendsRequest();
+            String requestId = sid.nextShort();
+            friendsRequest.setId(requestId);
+            friendsRequest.setSendUserId(user.getId());//发送申请的用户id
+            friendsRequest.setAcceptUserId(user.getId());//同意人id
+            friendsRequest.setRequestDateTime(System.currentTimeMillis());
+            friendsRequestMapper.insert(friendsRequest);
+        }
     }
 
 
