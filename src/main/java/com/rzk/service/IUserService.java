@@ -1,6 +1,7 @@
 package com.rzk.service;
 
 import com.rzk.enums.SearchFriendsStatusEnum;
+import com.rzk.pojo.FriendsRequest;
 import com.rzk.pojo.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -57,4 +58,6 @@ public interface IUserService extends IService<User> {
      * @param friendUserName
      */
     void sendFriendRequest(String myUserId, String friendUserName);
+
+
 }

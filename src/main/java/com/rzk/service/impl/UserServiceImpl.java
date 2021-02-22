@@ -1,6 +1,7 @@
 package com.rzk.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.rzk.enums.SearchFriendsStatusEnum;
 import com.rzk.mapper.FriendsRequestMapper;
 import com.rzk.mapper.MyFriendsMapper;
@@ -9,6 +10,7 @@ import com.rzk.pojo.MyFriends;
 import com.rzk.pojo.User;
 import com.rzk.idworker.Sid;
 import com.rzk.mapper.UserMapper;
+import com.rzk.service.IFriendsRequestService;
 import com.rzk.service.IUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.rzk.utils.FastDFSClient;
@@ -168,12 +170,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             FriendsRequest friendsRequest = new FriendsRequest();
             String requestId = sid.nextShort();
             friendsRequest.setId(requestId);
-            friendsRequest.setSendUserId(user.getId());//发送申请的用户id
+            friendsRequest.setSendUserId(myUserId);//发送申请的用户id
             friendsRequest.setAcceptUserId(user.getId());//同意人id
             friendsRequest.setRequestDateTime(System.currentTimeMillis());
             friendsRequestMapper.insert(friendsRequest);
         }
     }
+
 
 
 }

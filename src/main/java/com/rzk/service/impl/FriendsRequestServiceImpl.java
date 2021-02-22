@@ -1,10 +1,15 @@
 package com.rzk.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.rzk.idworker.Sid;
+import com.rzk.mapper.MyFriendsMapper;
 import com.rzk.pojo.FriendsRequest;
 import com.rzk.mapper.FriendsRequestMapper;
+import com.rzk.pojo.MyFriends;
 import com.rzk.service.IFriendsRequestService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.rzk.vo.FriendsRequestVo;
+import com.rzk.vo.MyFriendsVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +30,11 @@ public class FriendsRequestServiceImpl extends ServiceImpl<FriendsRequestMapper,
 
     @Resource
     private FriendsRequestMapper friendsRequestMapper;
+    @Resource
+    private Sid sid;
+    @Resource
+    private MyFriendsMapper myFriendsMapper;
+
 
     /**
      *
@@ -35,4 +45,59 @@ public class FriendsRequestServiceImpl extends ServiceImpl<FriendsRequestMapper,
     public List<FriendsRequestVo> queryFriendRequestList(String acceptUserId) {
         return friendsRequestMapper.queryFriendRequestList(acceptUserId);
     }
+
+    /**
+     * 忽略好友添加请求
+     * @param friendsRequest
+     */
+    @Override
+    public void deleteFriendRequest(FriendsRequest friendsRequest) {
+        UpdateWrapper<FriendsRequest> updateWrapper = new UpdateWrapper();
+        updateWrapper.eq("send_user_id",friendsRequest.getSendUserId());
+        updateWrapper.eq("accept_user_id",friendsRequest.getAcceptUserId());
+        friendsRequestMapper.delete(updateWrapper);
+    }
+
+    /**
+     * 通过好友请求
+     * @param sendUserId
+     * @param acceptUserId
+     */
+    @Override
+    public void passFriendRequest(String sendUserId, String acceptUserId) {
+        //进行双向好友数据保存
+        saveFriends(sendUserId,acceptUserId);
+        saveFriends(acceptUserId,sendUserId);
+        //保存成功后删除好友请求表中的数据
+        FriendsRequest friendsRequest = new FriendsRequest();
+        friendsRequest.setSendUserId(sendUserId);
+        friendsRequest.setAcceptUserId(acceptUserId);
+
+        deleteFriendRequest(friendsRequest);
+
+    }
+
+    /**
+     * 查询好友表中的列表数据
+     * @param userId 用户id
+     * @return
+     */
+    @Override
+    public List<MyFriendsVo> queryMyFriends(String userId) {
+        return friendsRequestMapper.queryMyFriends(userId);
+    }
+
+    //通过好友请求并保存数据到my_friends表中
+    private void saveFriends(String sendUserId, String acceptUserId){
+        MyFriends myFriends = new MyFriends();
+        String recordId = sid.nextShort();
+
+        myFriends.setId(recordId);
+        myFriends.setMyUserId(sendUserId);//发送好友请求人的id
+        myFriends.setMyFriendUserId(acceptUserId);//接收请求人的id
+        myFriends.setCreateTime(System.currentTimeMillis());
+
+        myFriendsMapper.insert(myFriends);
+    }
+
 }

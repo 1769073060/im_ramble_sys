@@ -4,7 +4,9 @@ package com.rzk.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.rzk.bo.UserBo;
 import com.rzk.consts.MsgConsts;
+import com.rzk.enums.OperatorFriendRequestTypeEnum;
 import com.rzk.enums.SearchFriendsStatusEnum;
+import com.rzk.pojo.FriendsRequest;
 import com.rzk.pojo.User;
 import com.rzk.service.IFriendsRequestService;
 import com.rzk.service.IUserService;
@@ -13,6 +15,7 @@ import com.rzk.utils.FileUtils;
 import com.rzk.utils.MD5Utils;
 import com.rzk.utils.Result;
 import com.rzk.vo.FriendsRequestVo;
+import com.rzk.vo.MyFriendsVo;
 import com.rzk.vo.UserVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -229,11 +232,40 @@ public class UserController {
         return new Result(MsgConsts.SUCCESS_CODE, MsgConsts.SUCCESS_MSG, friendsRequestVos);
     }
 
-        /**
-         * 修改个性签名方法
-         * @param user
-         * @return
-         */
+    /**
+     * 好友请求处理映射
+     * @param acceptUserId
+     * @param sendUserId
+     * @param operType
+     * @return
+     */
+    @ApiOperation(httpMethod = "POST", value = "好友请求列表查询")
+    @PostMapping("/operFriendRequest")
+    public Result operFriendRequest(@RequestParam("acceptUserId") String acceptUserId,@RequestParam("sendUserId")String sendUserId,@RequestParam("operType")Integer operType) {
+        FriendsRequest friendsRequest = new FriendsRequest();
+        friendsRequest.setAcceptUserId(acceptUserId);
+        friendsRequest.setSendUserId(sendUserId);
+        if (operType == OperatorFriendRequestTypeEnum.IGNORE.type) {
+            //满足此条件将需要对好友请求表中的数据进行删除操作
+            iFriendsRequestService.deleteFriendRequest(friendsRequest);
+        }else if (operType == OperatorFriendRequestTypeEnum.PASS.type){
+            //满足此条件需要向好友表中添加一条记录,同时删除好友请求表中对应的记录
+            iFriendsRequestService.passFriendRequest(sendUserId,acceptUserId);
+        }
+        //查询好友表中的列表数据
+
+        List<MyFriendsVo> myFriendsVos = iFriendsRequestService.queryMyFriends(acceptUserId);
+        return new Result(MsgConsts.SUCCESS_CODE, MsgConsts.SUCCESS_MSG, myFriendsVos);
+
+    }
+
+
+
+    /**
+     * 修改个性签名方法
+     * @param user
+     * @return
+     */
     @ApiOperation(httpMethod = "POST", value = "修改个性签名方法")
     @PostMapping("/setPersonalizedSignature")
     public Result setPersonalizedSignature(@RequestBody User user){

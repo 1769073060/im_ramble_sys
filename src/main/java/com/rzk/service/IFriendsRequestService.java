@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.rzk.pojo.FriendsRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.rzk.vo.FriendsRequestVo;
+import com.rzk.vo.MyFriendsVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -26,4 +27,24 @@ public interface IFriendsRequestService extends IService<FriendsRequest> {
      */
     List<FriendsRequestVo> queryFriendRequestList(String acceptUserId);
 
+
+    /**
+     * 处理好友请求 忽略好友请求
+     * @param friendsRequest
+     */
+    void deleteFriendRequest(FriendsRequest friendsRequest);
+
+    /**
+     * 处理好友请求 通过好友请求
+     * @param sendUserId
+     * @param acceptUserId
+     */
+    void passFriendRequest(String sendUserId,String acceptUserId);
+
+    /**
+     * 好友列表查询
+     * @param userId
+     * @return
+     */
+    List<MyFriendsVo> queryMyFriends(String userId);
 }
