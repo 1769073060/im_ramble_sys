@@ -6,11 +6,13 @@ import com.rzk.bo.UserBo;
 import com.rzk.consts.MsgConsts;
 import com.rzk.enums.SearchFriendsStatusEnum;
 import com.rzk.pojo.User;
+import com.rzk.service.IFriendsRequestService;
 import com.rzk.service.IUserService;
 import com.rzk.utils.FastDFSClient;
 import com.rzk.utils.FileUtils;
 import com.rzk.utils.MD5Utils;
 import com.rzk.utils.Result;
+import com.rzk.vo.FriendsRequestVo;
 import com.rzk.vo.UserVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+
+import java.util.List;
 
 import static com.rzk.utils.ChkUtils.isEmpty;
 
@@ -39,7 +43,9 @@ public class UserController {
 
     @Resource
     private IUserService iUserService;
-    
+    @Resource
+    private IFriendsRequestService iFriendsRequestService;
+
     @Resource
     private FastDFSClient fastDFSClient;
 
@@ -184,6 +190,12 @@ public class UserController {
         }
     }
 
+    /**
+     * 发送添加好友请求
+     * @param id
+     * @param userName
+     * @return
+     */
     @ApiOperation(httpMethod = "POST", value = "发送添加好友请求")
     @PostMapping("/addFriendRequest")
     public Result addFriendRequest(@RequestParam("myUserId") String id,@RequestParam("friendUserName")String userName){
@@ -206,10 +218,22 @@ public class UserController {
     }
 
     /**
-     * 修改个性签名方法
-     * @param user
+     * 好友请求列表查询 @RequestParam("userId")这个对应前端请求过来的参数
+     * @param userId
      * @return
      */
+    @ApiOperation(httpMethod = "POST", value = "好友请求列表查询")
+    @PostMapping("/queryFriendRequest")
+    public Result addFriendRequest(@RequestParam("userId") String userId) {
+        List<FriendsRequestVo> friendsRequestVos = iFriendsRequestService.queryFriendRequestList(userId);
+        return new Result(MsgConsts.SUCCESS_CODE, MsgConsts.SUCCESS_MSG, friendsRequestVos);
+    }
+
+        /**
+         * 修改个性签名方法
+         * @param user
+         * @return
+         */
     @ApiOperation(httpMethod = "POST", value = "修改个性签名方法")
     @PostMapping("/setPersonalizedSignature")
     public Result setPersonalizedSignature(@RequestBody User user){

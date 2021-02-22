@@ -4,8 +4,12 @@ import com.rzk.pojo.FriendsRequest;
 import com.rzk.mapper.FriendsRequestMapper;
 import com.rzk.service.IFriendsRequestService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.rzk.vo.FriendsRequestVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -19,4 +23,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class FriendsRequestServiceImpl extends ServiceImpl<FriendsRequestMapper, FriendsRequest> implements IFriendsRequestService {
 
+    @Resource
+    private FriendsRequestMapper friendsRequestMapper;
+
+    /**
+     *
+     * @param acceptUserId  被添加人id
+     * @return
+     */
+    @Override
+    public List<FriendsRequestVo> queryFriendRequestList(String acceptUserId) {
+        return friendsRequestMapper.queryFriendRequestList(acceptUserId);
+    }
 }

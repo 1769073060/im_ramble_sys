@@ -28,7 +28,8 @@ public class CrossConfig implements WebMvcConfigurer {
                  * 默认情况下，所有的域名都是允许的
                  * "http://127.0.0.1:8080",
                  */
-                .allowedOrigins("http://192.168.0.113")
+//                .allowedOrigins("http://192.168.0.113")
+                .allowedOrigins("http://192.168.3.201")
                 /**
                  * *设置HTTP方法为允许，例如{"GET"}， {"POST"}等。
                  * 默认“简单”方法{@code GET}， {@code HEAD}，和{@code POST}
