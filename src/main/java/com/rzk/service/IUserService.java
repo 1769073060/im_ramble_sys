@@ -57,7 +57,7 @@ public interface IUserService extends IService<User> {
      * @param myUserId
      * @param friendUserName
      */
-    void sendFriendRequest(String myUserId, String friendUserName);
+    Integer sendFriendRequest(String myUserId, String friendUserName);
 
 
 }

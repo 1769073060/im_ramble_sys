@@ -7,12 +7,19 @@ public class MsgConsts {
      * 501：bean验证错误，不管多少个错误都以map形式返回
      * 502：拦截器拦截到用户token出错
      * 555：异常抛出信息
+     * 503：表示 无此用户
+     * 504：表示 不能添加自己
+     * 505: 表示 该用户已经是你的好友
      */
     public static final int SUCCESS_CODE = 200;
     public static final int FAIL_CODE = 500;
     public static final int Error_Map_CODE = 501;
     public static final int Error_Token_CODE = 502;
     public static final int Error_Exception_CODE = 555;
+    public static final int NOT_HAVE_USER_CODE = 503;
+    public static final int NOT_ADD_YOURSELF_CODE = 504;
+    public static final int YOUR_FRIEND_CODE = 505;
+
 
     /**
      * 类型
@@ -77,6 +84,9 @@ public class MsgConsts {
     public static final String ACCOUNT_OR_PASSWORD_ERROR = "账号或密码错误";
     public static final String PASSWORD_ERROR = "密码错误";
     public static final String Enter_User_Name = "请输入用户名";
-    public static final String SEND_SUCCESS = "发送成功";
+
+    public static final String ADD_FAIL = "添加失败";
+    public static final String ADD_SUCCESS = "添加成功";
+    public static final String SEND_SUCCESS = "您已发送过,请等待对方同意";
 
 }

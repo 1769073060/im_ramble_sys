@@ -2,6 +2,7 @@ package com.rzk.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.rzk.bo.UserBo;
 import com.rzk.consts.MsgConsts;
 import com.rzk.enums.OperatorFriendRequestTypeEnum;
@@ -189,7 +190,7 @@ public class UserController {
             return new Result(MsgConsts.SUCCESS_CODE, MsgConsts.SUCCESS_MSG, userVo);
         }else {
             String msg = SearchFriendsStatusEnum.getMsgByKey(status);
-            return new Result(MsgConsts.FAIL_CODE, MsgConsts.FAIL_MSG, msg);
+            return new Result(MsgConsts.YOUR_FRIEND_CODE, MsgConsts.SUCCESS_MSG, msg);
         }
     }
 
@@ -208,15 +209,22 @@ public class UserController {
             result = new Result(MsgConsts.FAIL_CODE, MsgConsts.FAIL_MSG, MsgConsts.Enter_User_Name);
             return result;
         }
+
         Integer status = iUserService.preconditionSearchFriends(id,userName);
         //如果状态等于0就可以添加好友
         if (status == SearchFriendsStatusEnum.SUCCESS.status){
-            iUserService.sendFriendRequest(id, userName);
+            Integer integer = iUserService.sendFriendRequest(id, userName);
+            if (integer==MsgConsts.ZERO_STATUS){
+                return new Result(MsgConsts.FAIL_CODE, MsgConsts.FAIL_MSG, MsgConsts.ADD_FAIL);
+            }
+            if (integer==MsgConsts.SECOND_STATUS){
+                return new Result(MsgConsts.FAIL_CODE, MsgConsts.FAIL_MSG, MsgConsts.SEND_SUCCESS);
+            }
         }else {
             String msg = SearchFriendsStatusEnum.getMsgByKey(status);
             return new Result(MsgConsts.FAIL_CODE, MsgConsts.FAIL_MSG, msg);
         }
-        return new Result(MsgConsts.SUCCESS_CODE, MsgConsts.SUCCESS_MSG, MsgConsts.SEND_SUCCESS);
+        return new Result(MsgConsts.SUCCESS_CODE, MsgConsts.SUCCESS_MSG, MsgConsts.ADD_SUCCESS);
 
     }
 

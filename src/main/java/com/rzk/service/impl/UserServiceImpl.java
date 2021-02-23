@@ -141,6 +141,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (myUserId.equals(user.getId())){
             return SearchFriendsStatusEnum.NOT_YOURSELF.status;
         }
+
         //搜索的朋友已经是你的好友,返回[该用户已经是你的好友]
         QueryWrapper<MyFriends> friendsQueryWrapper = new QueryWrapper<>();
         friendsQueryWrapper.eq("my_user_id",myUserId);
@@ -153,13 +154,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return SearchFriendsStatusEnum.SUCCESS.status;
     }
 
+    /**
+     * 0添加失败,1添加成功,2已经添加过
+     * @param myUserId
+     * @param friendUserName
+     * @return
+     */
     @Override
-    public void sendFriendRequest(String myUserId, String friendUserName) {
+    public Integer sendFriendRequest(String myUserId, String friendUserName) {
         //查询好友信息
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("user_name",friendUserName);
         User user = userMapper.selectOne(queryWrapper);
-
+        //查询是否添加过
+        QueryWrapper<FriendsRequest> friendsRequestQueryWrapper = new QueryWrapper();
+        friendsRequestQueryWrapper.eq("send_user_id",myUserId);
+        friendsRequestQueryWrapper.eq("accept_user_id",user.getId());
+        FriendsRequest friendsRequest1 = friendsRequestMapper.selectOne(friendsRequestQueryWrapper);
+        //如果不等于空的话证明对方还能同意,如果同意的话会把 friends_request表中的数据删除,在my_friends表中添加数据,这时需要在my_friends表中的判断有没有该数据.因为可能删除好友后也会使friends_request表中的数据删除,所以要判断my_friends有没有该好友
+        if (friendsRequest1!=null){
+            return 2;
+        }
 
         QueryWrapper<MyFriends> friendsQueryWrapper = new QueryWrapper<>();
         friendsQueryWrapper.eq("my_user_id",myUserId);
@@ -173,8 +188,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             friendsRequest.setSendUserId(myUserId);//发送申请的用户id
             friendsRequest.setAcceptUserId(user.getId());//同意人id
             friendsRequest.setRequestDateTime(System.currentTimeMillis());
-            friendsRequestMapper.insert(friendsRequest);
+            int insert = friendsRequestMapper.insert(friendsRequest);
+            return insert;
         }
+        return  0;
+
     }
 
 

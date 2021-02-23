@@ -21,7 +21,7 @@ import java.util.List;
  */
 public interface FriendsRequestMapper extends BaseMapper<FriendsRequest> {
     /**
-     * 发送者的发送请求   这里的信息是给接收者看的
+     * 发送者的发送请求   这里的信息是给接收者看的  如果添加成功该信息就看不见,因为该数据删除了
      * @param acceptUserId
      * @return
      */
@@ -49,7 +49,7 @@ public interface FriendsRequestMapper extends BaseMapper<FriendsRequest> {
             "left join user u\n" +
             "on u.id = mf.my_friend_user_id\n" +
             "where mf.my_user_id = #{userId}")
-    List<MyFriendsVo> queryMyFriends(String userId);
+    List<MyFriendsVo> queryMyFriends(@Param("userId") String userId);
 
 
 }
