@@ -21,6 +21,7 @@ import com.rzk.vo.UserVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -203,7 +204,6 @@ public class UserController {
     @ApiOperation(httpMethod = "POST", value = "发送添加好友请求")
     @PostMapping("/addFriendRequest")
     public Result addFriendRequest(@RequestParam("myUserId") String id,@RequestParam("friendUserName")String userName){
-        System.out.println(userName);
         Result result = null;
         if (isEmpty(id,userName)){
             result = new Result(MsgConsts.FAIL_CODE, MsgConsts.FAIL_MSG, MsgConsts.Enter_User_Name);
@@ -267,7 +267,23 @@ public class UserController {
 
     }
 
-
+    /**
+     * 通讯录 好友请求列表查询 @RequestParam("userId")这个对应前端请求过来的参数
+     * @param userId
+     * @return
+     */
+    @ApiOperation(httpMethod = "POST", value = "好友请求列表查询")
+    @PostMapping("/myFriends")
+    public Result myFriends(@RequestParam("userId") String userId) {
+        Result result = null;
+        if (isEmpty(userId)){
+            result = new Result(MsgConsts.FAIL_CODE, MsgConsts.FAIL_MSG, MsgConsts.MISS_PARAM_MSG);
+            return result;
+        }
+        //数据库查询好友列表
+        List<MyFriendsVo> myFriendsVos = iFriendsRequestService.queryMyFriends(userId);
+        return new Result(MsgConsts.SUCCESS_CODE,MsgConsts.SUCCESS_MSG,myFriendsVos);
+    }
 
     /**
      * 修改个性签名方法

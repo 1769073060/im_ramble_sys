@@ -37,14 +37,14 @@ public interface FriendsRequestMapper extends BaseMapper<FriendsRequest> {
     List<FriendsRequestVo>  queryFriendRequestList(@Param("acceptUserId")String acceptUserId);
 
     /**
-     *
+     * 查询好友
      * @return
      */
     @Select("select\n" +
             "       u.id as friendUserId,\n" +
-            "       u.user_name as friendsUserName,\n" +
-            "       u.face_image as friendsFaceImage,\n" +
-            "       u.nick_name as friendsNickName\n" +
+            "       u.user_name as friendUserName,\n" +
+            "       u.face_image as friendFaceImage,\n" +
+            "       u.nick_name as friendNickName\n" +
             "from my_friends mf\n" +
             "left join user u\n" +
             "on u.id = mf.my_friend_user_id\n" +

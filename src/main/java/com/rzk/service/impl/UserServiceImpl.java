@@ -75,7 +75,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         user.setId(userId);
         user.setFaceImage("");
         user.setFaceImageBig("");
-        user.setNickName("");
+        user.setNickName(user.getUserName());
+        user.setUserName(user.getUserName());
         user.setPersonalizedSignature("");
         user.setCreateTime(System.currentTimeMillis());
         user.setUpdateTime(System.currentTimeMillis());
