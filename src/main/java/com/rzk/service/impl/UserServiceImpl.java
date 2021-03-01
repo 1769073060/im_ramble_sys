@@ -2,9 +2,12 @@ package com.rzk.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.rzk.enums.MsgSignFlagEnum;
 import com.rzk.enums.SearchFriendsStatusEnum;
+import com.rzk.mapper.ChatMsgMapper;
 import com.rzk.mapper.FriendsRequestMapper;
 import com.rzk.mapper.MyFriendsMapper;
+import com.rzk.netty.ChatMsg;
 import com.rzk.pojo.FriendsRequest;
 import com.rzk.pojo.MyFriends;
 import com.rzk.pojo.User;
@@ -23,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.*;
 
 /**
  * <p>
@@ -48,6 +52,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private QRCodeUtils qrCodeUtils;
     @Resource
     private FastDFSClient fastDFSClient;
+    @Resource
+    private ChatMsgMapper chatMsgMapper;
+
 
     /**
      * 增加用户
@@ -196,6 +203,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     }
 
+    @Override
+    public String saveMsg(ChatMsg chatMsg) {
+        com.rzk.pojo.ChatMsg msgDB = new com.rzk.pojo.ChatMsg();
+        String msgId = sid.nextShort();
+        msgDB.setId(msgId);
+        msgDB.setAcceptUserId(chatMsg.getReceiverId());//接收者id
+        msgDB.setSendUserId(chatMsg.getSenderId());//发送者id
+        msgDB.setCreateTime(System.currentTimeMillis());
+        msgDB.setSignFlag(MsgSignFlagEnum.unsign.type);//状态
+        msgDB.setMsg(chatMsg.getMsg());//消息的内容
+
+        chatMsgMapper.insert(msgDB);
+
+        return msgId;
+    }
+
+    @Override
+    public void updateMsgSigned(List<String> msgIdList) {
+        chatMsgMapper.updateBatchMsgSigned(msgIdList);
+    }
 
 
 }

@@ -1,9 +1,12 @@
 package com.rzk.service;
 
 import com.rzk.enums.SearchFriendsStatusEnum;
+import com.rzk.netty.ChatMsg;
 import com.rzk.pojo.FriendsRequest;
 import com.rzk.pojo.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -60,4 +63,16 @@ public interface IUserService extends IService<User> {
     Integer sendFriendRequest(String myUserId, String friendUserName);
 
 
+    /**
+     * 保存用户聊天消息
+     * @param chatMsg
+     * @return
+     */
+    String saveMsg(ChatMsg chatMsg);
+
+    /**
+     * 批量插入
+     * @param msgIdList
+     */
+    void updateMsgSigned(List<String> msgIdList);
 }
