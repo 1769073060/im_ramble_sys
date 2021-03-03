@@ -45,7 +45,7 @@ public class WebSocketServer {
     }
 
     public void start() throws InterruptedException {
-        this.future = server.bind("192.168.3.201",8890);
+        this.future = server.bind(8890);
         Thread.sleep(1000);
         if (future.isSuccess()) {
             System.out.println("启动 Netty 成功");

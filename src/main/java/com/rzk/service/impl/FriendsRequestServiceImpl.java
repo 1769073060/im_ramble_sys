@@ -1,15 +1,22 @@
 package com.rzk.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.rzk.enums.MsgActionEnum;
+import com.rzk.enums.UserChannelRel;
 import com.rzk.idworker.Sid;
 import com.rzk.mapper.MyFriendsMapper;
+import com.rzk.netty.DataContent;
 import com.rzk.pojo.FriendsRequest;
 import com.rzk.mapper.FriendsRequestMapper;
 import com.rzk.pojo.MyFriends;
 import com.rzk.service.IFriendsRequestService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.rzk.utils.JsonUtils;
 import com.rzk.vo.FriendsRequestVo;
 import com.rzk.vo.MyFriendsVo;
+import io.netty.channel.Channel;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,6 +82,18 @@ public class FriendsRequestServiceImpl extends ServiceImpl<FriendsRequestMapper,
 
         deleteFriendRequest(friendsRequest);
 
+
+
+        Channel sendChannel = UserChannelRel.get(sendUserId);
+        //如果这个通道不等于空就主动推送消息
+        if (sendChannel!=null){
+            //websocket主动推送消息到请求推送者,更新通讯录列表为最新的
+            DataContent dataContent = new DataContent();
+            dataContent.setAction(MsgActionEnum.PULL_FRIEND.type);
+
+            //消息推送
+            sendChannel.writeAndFlush(new TextWebSocketFrame(JsonUtils.objectToJson(dataContent)));
+        }
     }
 
     /**
